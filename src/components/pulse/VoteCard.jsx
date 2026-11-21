@@ -1,17 +1,39 @@
-function formatRemaining(closesAt) {
-  const diff = new Date(closesAt).getTime() - Date.now();
+import { useEffect, useState } from 'react';
+
+// Hitung mundur sederhana dari `closesAt` (ISO 8601) ke waktu sekarang.
+function formatRemaining(closesAt, now) {
+  const diff = new Date(closesAt).getTime() - now;
   if (Number.isNaN(diff)) return '';
   if (diff <= 0) return 'Ditutup';
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `${Math.max(1, minutes)} menit lagi`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} jam lagi`;
-  const days = Math.floor(hours / 24);
-  return `${days} hari lagi`;
+  const totalMinutes = Math.floor(diff / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+  if (days > 0) return `${days} hari ${hours} jam lagi`;
+  if (hours > 0) return `${hours} jam ${minutes} menit lagi`;
+  return `${minutes} menit lagi`;
+}
+
+// Perbandingan XP yang masuk ke sisi Ya vs Tidak (bukan "odds", bukan nilai uang).
+function simpleRatio(a, b) {
+  if (a === 0 && b === 0) return '1:1';
+  if (a === 0) return '0:1';
+  if (b === 0) return '1:0';
+  const gcd = (x, y) => (y === 0 ? x : gcd(y, x % y));
+  const g = gcd(a, b);
+  return `${a / g}:${b / g}`;
 }
 
 export default function VoteCard({ market, currentUser, onVote }) {
   const { id, question, category, campus, closesAt, status, pool, votes } = market || {};
+
+  // Tick tiap 30 detik supaya hitungan waktu tetap segar tanpa beban render berat.
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+
   const yes = pool?.yes || 0;
   const no = pool?.no || 0;
   const total = yes + no;
@@ -21,10 +43,11 @@ export default function VoteCard({ market, currentUser, onVote }) {
 
   const myVote = currentUser?.votes?.[id];
   const xp = currentUser?.xp ?? 0;
-  const timeLabel = formatRemaining(closesAt);
+  const timeLabel = formatRemaining(closesAt, now);
   const isClosed = status !== 'open' || timeLabel === 'Ditutup';
   const canVote = !isClosed && !myVote;
   const insufficient = canVote && xp < 100;
+  const ratio = simpleRatio(yes, no);
 
   return (
     <article className="vote-card">
@@ -41,13 +64,16 @@ export default function VoteCard({ market, currentUser, onVote }) {
 
       <h3 className="vote-question">{question}</h3>
 
-      {/* Total Pool XP */}
-      <div className="vote-meta" style={{ gap: 12 }}>
+      {/* Ringkasan komunitas: total XP, rincian sisi, peserta, perbandingan dukungan */}
+      <div className="vote-meta" style={{ gap: 12, marginTop: 6 }}>
         <span className="stat-pill" style={{ padding: '4px 10px', fontSize: 13 }}>
           Total Pool: <strong>{total.toLocaleString('id')} XP</strong>
         </span>
         <span className="muted" style={{ fontSize: 13 }}>
           Ya: {yes.toLocaleString('id')} XP · Tidak: {no.toLocaleString('id')} XP
+        </span>
+        <span className="muted" style={{ fontSize: 13 }}>
+          Perbandingan dukungan: {ratio}
         </span>
         <span className="muted" style={{ fontSize: 13, marginLeft: 'auto' }}>
           {participantCount} peserta
@@ -67,14 +93,19 @@ export default function VoteCard({ market, currentUser, onVote }) {
         <span>Tidak {noPercent}%</span>
       </div>
 
+      {/* Biaya vote tetap 100 XP sesuai aturan PRD 3.4 (bukan pembayaran) */}
+      {canVote && (
+        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+          Biaya vote: 100 Campus XP. XP adalah poin reputasi virtual, bukan nilai uang.
+        </div>
+      )}
+
       {myVote ? (
         <div className="muted" style={{ textAlign: 'center' }}>
           Sudah Vote: {myVote === 'yes' ? 'Ya' : 'Tidak'}
         </div>
       ) : isClosed ? (
-        <div className="muted" style={{ textAlign: 'center' }}>
-          Ditutup
-        </div>
+        <div className="muted" style={{ textAlign: 'center' }}>Ditutup</div>
       ) : (
         <>
           <div className="vote-actions">
