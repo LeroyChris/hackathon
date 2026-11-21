@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ENUMS } from '../data/mockData.js';
-import { MAX_CREATED_MARKETS } from '../lib/storage.js';
+import { ENUMS } from '../../data/mockData.js';
+import { MAX_CREATED_MARKETS } from '../../lib/storage.js';
 
 const CATEGORIES = ENUMS.marketCategory;
 const CAMPUSES = ['Kemang', 'Sudirman', 'Both'];
