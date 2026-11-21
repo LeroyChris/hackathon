@@ -139,7 +139,7 @@ export default function VoteCard({ market, currentUser, onVote, creatorName }) {
                   border: '1px solid rgba(52,211,153,0.35)', borderRadius: 10,
                   padding: '8px 10px', fontSize: 14, fontWeight: 600,
                 }}>
-                  Prediksi kamu benar! Campus XP kamu bertambah.
+                  Benar! +{market.pool[myVote] || 0} XP
                 </div>
               )}
               {lost && (

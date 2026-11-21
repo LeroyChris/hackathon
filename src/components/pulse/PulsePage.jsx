@@ -7,6 +7,33 @@ import Leaderboard from './Leaderboard';
 export function PulsePage({ predictions, currentUser, onVote, onCreatePrediction, profiles }) {
   const [showModal, setShowModal] = useState(false);
 
+  // Inject sample resolved data to ensure UI coverage
+  const resolvedPredictions = [
+    ...predictions,
+    {
+      id: 'debug-win',
+      question: 'Contoh: Prediksi yang kamu menangkan',
+      category: 'akademik',
+      campus: 'Kemang',
+      createdBy: 'u01',
+      status: 'resolved',
+      outcome: 'yes',
+      pool: { yes: 1200, no: 800 },
+      votes: [{ userId: 'me', side: 'yes', amount: 100 }],
+    },
+    {
+      id: 'debug-loss',
+      question: 'Contoh: Prediksi yang kamu kalahkan',
+      category: 'sports',
+      campus: 'Sudirman',
+      createdBy: 'u03',
+      status: 'resolved',
+      outcome: 'yes',
+      pool: { yes: 800, no: 1200 },
+      votes: [{ userId: 'me', side: 'no', amount: 100 }],
+    },
+  ];
+
   return (
     <div className="app-main pulse-page" style={{ padding: 16, maxWidth: 1400, margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -17,7 +44,7 @@ export function PulsePage({ predictions, currentUser, onVote, onCreatePrediction
       </header>
 
       <PredictionList
-        predictions={predictions}
+        predictions={resolvedPredictions}
         currentUser={currentUser}
         onVote={onVote}
         profiles={profiles}
