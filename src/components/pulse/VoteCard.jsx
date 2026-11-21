@@ -24,7 +24,7 @@ function simpleRatio(a, b) {
   return `${a / g}:${b / g}`;
 }
 
-export default function VoteCard({ market, currentUser, onVote }) {
+export default function VoteCard({ market, currentUser, onVote, creatorName }) {
   const { id, question, category, campus, closesAt, status, pool, votes } = market || {};
 
   // Tick tiap 30 detik supaya hitungan waktu tetap segar tanpa beban render berat.
@@ -63,6 +63,13 @@ export default function VoteCard({ market, currentUser, onVote }) {
       </div>
 
       <h3 className="vote-question">{question}</h3>
+
+      {creatorName && (
+        <div className="muted" style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, margin: '-4px 0 2px' }}>
+          <span>Dibuat oleh:</span>
+          <span style={{ fontWeight: 600, color: 'var(--fg)' }}>{creatorName}</span>
+        </div>
+      )}
 
       {/* Ringkasan komunitas: total XP, rincian sisi, peserta, perbandingan dukungan */}
       <div className="vote-meta" style={{ gap: 12, marginTop: 6 }}>

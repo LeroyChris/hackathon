@@ -8,7 +8,7 @@ export function PulsePage({ predictions, currentUser, onVote, onCreatePrediction
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="app-main pulse-page" style={{ padding: 16, maxWidth: 720, margin: '0 auto' }}>
+    <div className="app-main pulse-page" style={{ padding: 16, maxWidth: 1400, margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h1 style={{ fontSize: 24, margin: 0 }}>Campus Pulse</h1>
         <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
@@ -16,7 +16,12 @@ export function PulsePage({ predictions, currentUser, onVote, onCreatePrediction
         </button>
       </header>
 
-      <PredictionList predictions={predictions} currentUser={currentUser} onVote={onVote} />
+      <PredictionList
+        predictions={predictions}
+        currentUser={currentUser}
+        onVote={onVote}
+        profiles={profiles}
+      />
 
       {showModal && (
         <CreatePredictionModal

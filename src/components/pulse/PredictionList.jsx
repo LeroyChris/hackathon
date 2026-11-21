@@ -3,7 +3,7 @@ import VoteCard from './VoteCard';
 
 const CAMPUS_FILTERS = ['All', 'Kemang', 'Sudirman', 'Both'];
 
-export default function PredictionList({ predictions, currentUser, onVote }) {
+export default function PredictionList({ predictions, currentUser, onVote, profiles }) {
   const [campus, setCampus] = useState('All');
   const [category, setCategory] = useState('All');
 
@@ -47,15 +47,29 @@ export default function PredictionList({ predictions, currentUser, onVote }) {
       </div>
 
       {filtered.length ? (
-        <div className="pulse-list">
-          {filtered.map((market) => (
-            <VoteCard
-              key={market.id}
-              market={market}
-              currentUser={currentUser}
-              onVote={onVote}
-            />
-          ))}
+        <div
+          className="pulse-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 16,
+          }}
+        >
+          {filtered.map((market) => {
+            const profile = (profiles || []).find((p) => p.id === market.createdBy);
+            const creatorName = market.createdBy === 'me'
+              ? currentUser?.name || 'Kamu'
+              : profile?.name || market.createdBy;
+            return (
+              <VoteCard
+                key={market.id}
+                market={market}
+                currentUser={currentUser}
+                onVote={onVote}
+                creatorName={creatorName}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="empty-state">Tidak ada prediksi yang cocok dengan filter ini.</div>
