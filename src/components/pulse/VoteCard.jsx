@@ -57,6 +57,13 @@ export default function VoteCard({ market, currentUser, onVote, creatorName }) {
         <span className={`status-badge ${isClosed ? 'status-closed' : 'status-open'}`}>
           {isClosed ? 'Ditutup' : 'Open'}
         </span>
+        {status === 'resolved' && market.outcome && (
+          <span
+            className={`status-badge ${market.outcome === 'yes' ? 'status-open' : 'status-closed'}`}
+          >
+            Hasil: {market.outcome === 'yes' ? 'Ya' : 'Tidak'}
+          </span>
+        )}
         <span className="countdown" style={{ marginLeft: 'auto' }}>
           {timeLabel}
         </span>
@@ -107,37 +114,80 @@ export default function VoteCard({ market, currentUser, onVote, creatorName }) {
         </div>
       )}
 
-      {myVote ? (
-        <div className="muted" style={{ textAlign: 'center' }}>
-          Sudah Vote: {myVote === 'yes' ? 'Ya' : 'Tidak'}
-        </div>
-      ) : isClosed ? (
-        <div className="muted" style={{ textAlign: 'center' }}>Ditutup</div>
-      ) : (
-        <>
-          <div className="vote-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => onVote(id, 'yes')}
-              disabled={insufficient}
-              aria-label="Vote Ya 100 Campus XP"
-            >
-              Ya (100 XP)
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => onVote(id, 'no')}
-              disabled={insufficient}
-              aria-label="Vote Tidak 100 Campus XP"
-            >
-              Tidak (100 XP)
-            </button>
-          </div>
-          {insufficient && <p className="field-error">XP kamu tidak cukup</p>}
-        </>
-      )}
+      {(() => {
+        const resolved = status === 'resolved' && (market.outcome === 'yes' || market.outcome === 'no');
+        const won = resolved && myVote && myVote === market.outcome;
+        const lost = resolved && myVote && myVote !== market.outcome;
+
+        if (myVote && !resolved) {
+          return (
+            <div className="muted" style={{ textAlign: 'center' }}>
+              Sudah Vote: {myVote === 'yes' ? 'Ya' : 'Tidak'} · 100 XP
+            </div>
+          );
+        }
+
+        if (resolved) {
+          return (
+            <div style={{ textAlign: 'center' }}>
+              <div className="muted" style={{ marginBottom: 6 }}>
+                Hasil resmi: <strong>{market.outcome === 'yes' ? 'Ya' : 'Tidak'}</strong>
+              </div>
+              {won && (
+                <div style={{
+                  background: 'rgba(52,211,153,0.15)', color: 'var(--yes)',
+                  border: '1px solid rgba(52,211,153,0.35)', borderRadius: 10,
+                  padding: '8px 10px', fontSize: 14, fontWeight: 600,
+                }}>
+                  Prediksi kamu benar! Campus XP kamu bertambah.
+                </div>
+              )}
+              {lost && (
+                <div style={{
+                  background: 'rgba(251,113,133,0.15)', color: 'var(--no)',
+                  border: '1px solid rgba(251,113,133,0.35)', borderRadius: 10,
+                  padding: '8px 10px', fontSize: 14, fontWeight: 600,
+                }}>
+                  Prediksi kamu belum tepat. Coba lagi di prediksi berikutnya!
+                </div>
+              )}
+              {!myVote && (
+                <div className="muted">Kamu tidak ikut vote di prediksi ini.</div>
+              )}
+            </div>
+          );
+        }
+
+        if (isClosed) {
+          return <div className="muted" style={{ textAlign: 'center' }}>Ditutup</div>;
+        }
+
+        return (
+          <>
+            <div className="vote-actions">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => onVote(id, 'yes')}
+                disabled={insufficient}
+                aria-label="Vote Ya 100 Campus XP"
+              >
+                Ya (100 XP)
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => onVote(id, 'no')}
+                disabled={insufficient}
+                aria-label="Vote Tidak 100 Campus XP"
+              >
+                Tidak (100 XP)
+              </button>
+            </div>
+            {insufficient && <p className="field-error">XP kamu tidak cukup</p>}
+          </>
+        );
+      })()}
     </article>
   );
 }
