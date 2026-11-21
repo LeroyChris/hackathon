@@ -1,43 +1,14 @@
-import { GOAL_LABEL } from '../../data/mockData.js';
+import { ENUMS, GOAL_LABEL } from '../../data/mockData.js';
 
 export default function SwipeCard({
   profile,
-  onLike,
-  onPass,
   isLiked,
   isPassed,
+  onLike,
+  onPass,
 }) {
-  const handleMouseDown = (e) => {
-    e.currentTarget.setAttribute('data-start-x', e.clientX);
-  };
-
-  const handleMouseUp = (e) => {
-    const startX = parseInt(e.currentTarget.getAttribute('data-start-x')) || 0;
-    const diff = e.clientX - startX;
-
-    if (diff > 50 && !isLiked) {
-      onLike();
-    } else if (diff < -50 && !isPassed) {
-      onPass();
-    }
-  };
-
-  const handleTouchStart = (e) => {
-    e.currentTarget.setAttribute('data-start-y', e.touches[0].clientY);
-  };
-
-  const handleTouchEnd = (e) => {
-    const startY = parseInt(e.currentTarget.getAttribute('data-start-y')) || 0;
-    const diff = e.changedTouches[0].clientY - startY;
-
-    if (diff > 50 && !isLiked) {
-      onLike();
-    } else if (diff < -50 && !isPassed) {
-      onPass();
-    }
-  };
-
   const goals = profile.goals || [];
+  const interests = profile.interests || [];
   const campus = profile.campus;
   const prodi = profile.prodi;
   const angkatan = profile.angkatan;
@@ -45,64 +16,56 @@ export default function SwipeCard({
   const avatar = profile.avatar || '👤';
   const name = profile.name;
 
-  const goalBadges = goals.map(
-    (g) => `<span class="goal-badge" title="${GOAL_LABEL[g]}">${GOAL_LABEL[g]}</span>`
+  const interestTags = interests.map(
+    (i) => <span key={i} className="interest-tag">
+      {i}
+    </span>
   );
 
-  const style = isLiked
-    ? { transform: 'translateX(100%) rotate(-10deg)', transition: 'none' }
-    : isPassed
-    ? { transform: 'translateX(-100%) rotate(10deg)', transition: 'none' }
-    : {};
+  const goalBadges = goals.map(
+    (g) => <span key={g} className="goal-badge">
+      {GOAL_LABEL[g]}
+    </span>
+  );
 
   return (
-    <div
-      className="swipe-card"
-      role="button"
-      tabIndex={0}
-      aria-label={`Profil ${name}, swipe kanan untuk like, kiri untuk pass`}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div className="card-content" style={{ ...style }}>
-        <div className="avatar-emboji" aria-hidden="true">
-          {avatar}
-        </div>
-        <div className="profile-info">
-          <h3 className="profile-name">{name}</h3>
-          <div className="profile-meta">
-            <span className="prodi">{prodi}</span>
-            <span className="angkatan">Angkatan {angkatan}</span>
-            <span className="campus-badge" title={campus}>
-              {campus}
-            </span>
+    <section className="profile-card">
+      <div className="swipe-stack">
+        <div>
+          <div className="profile-avatar text-5xl rounded-circle bg-slate-800 w-20 h-20 flex items-center justify-center mx-auto mb-3">
+            {avatar}
           </div>
-          <p className="profile-bio">{bio}</p>
-          <div className="goal-badges">
-            {goalBadges.join('')}
+          <h3 className="profile-name text-lg font-semibold text-center">{name}</h3>
+          <div className="profile-meta text-sm text-slate-400">
+            <span>{prodi} • Angkatan {angkatan} • {campus}</span>
+          </div>
+          <p className="profile-bio text-slate-400 text-sm mb-4">{bio}</p>
+          <div className="interest-list flex flex-wrap gap-6 mb-4">
+            {interestTags}
+          </div>
+          <div className="goal-badges flex flex-wrap gap-2">
+            {goalBadges}
+          </div>
+          <div className="card-actions flex flex-col items-center gap-2 mt-6">
+            <button
+              className="action-btn like-btn flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-300 border border-green-500/30 rounded-md font-medium hover:bg-green-600/30 transition-colors"
+              onClick={onLike}
+              aria-label="Like"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              Like
+            </button>
+            <button
+              className="action-btn pass-btn flex items-center gap-2 px-4 py-2 bg-slate-600/30 text-slate-300 border border-slate-500/30 rounded-md font-medium hover:bg-slate-700/40 transition-colors"
+              onClick={onPass}
+              aria-label="Pass"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              Pass
+            </button>
           </div>
         </div>
       </div>
-      <div className="card-actions">
-        <button
-          className="action-btn like-btn"
-          aria-label="Like"
-          onClick={onLike}
-          onMouseDown={e => e.preventDefault()}
-        >
-          Like
-        </button>
-        <button
-          className="action-btn pass-btn"
-          aria-label="Pass"
-          onClick={onPass}
-          onMouseDown={e => e.preventDefault()}
-        >
-          Pass
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }
