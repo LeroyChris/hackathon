@@ -4,11 +4,11 @@ export default function FilterBar({ campusFilter, goalFilter, onCampusChange, on
   const campusOptions = ['Semua', ...ENUMS.campus];
 
   return (
-    <div className="filter-bar" role="region" aria-label="Filter profil Discover">
+    <section className="discover-filters">
       <div className="filter-group">
-        <label className="filter-label">Kampus</label>
+        <label className="filter-label text-slate-300 text-sm font-medium mb-1">Kampus</label>
         <select
-          className="filter-select"
+          className="bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-1.5 block w-full"
           value={campusFilter}
           onChange={(e) => onCampusChange(e.target.value)}
           aria-label="Filter kampus"
@@ -21,10 +21,10 @@ export default function FilterBar({ campusFilter, goalFilter, onCampusChange, on
         </select>
       </div>
 
-      <div className="filter-group">
-        <label className="filter-label">Tujuan</label>
+      <div className="filter-group flex flex-col gap-2">
+        <label className="filter-label text-slate-300 text-sm font-medium mb-1">Tujuan</label>
         <select
-          className="filter-select"
+          className="bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-3 py-1.5 block w-full"
           value={goalFilter}
           onChange={(e) => onGoalChange(e.target.value)}
           aria-label="Filter tujuan"
@@ -37,6 +37,6 @@ export default function FilterBar({ campusFilter, goalFilter, onCampusChange, on
           ))}
         </select>
       </div>
-    </div>
+    </section>
   );
 }

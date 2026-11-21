@@ -137,17 +137,15 @@ export default function DiscoverPage({
   }, [setShowMatchModal, setLikeBackProfile]);
 
   return (
-    <div className="discover-page">
-      <header className="discover-header">
-        <h2 className="page-title">Social Discovery</h2>
-
+    <section className="discover">
+      <div className="discover-filters">
         <FilterBar
           campusFilter={campusFilter}
           goalFilter={goalFilter}
           onCampusChange={(v) => setCampusFilter(v)}
           onGoalChange={(v) => setGoalFilter(v)}
         />
-      </header>
+      </div>
 
       {/* Status jika sudah habis */}
       {isDone && (
@@ -156,34 +154,18 @@ export default function DiscoverPage({
         </div>
       )}
 
- {/* Kartu swipe */}
+      {/* Kartu swipe */}
       {currentProfile && !isDone && (
-        <SwipeCard
-          profile={currentProfile}
-          isLiked={likedIds.has(currentProfile.id)}
-          isPassed={passedIds.has(currentProfile.id)}
-          onLike={handleLike}
-          onPass={handlePass}
-        />
+        <SwipeCard profile={currentProfile} isLiked={likedIds.has(currentProfile.id)} isPassed={passedIds.has(currentProfile.id)} onLike={handleLike} onPass={handlePass} />
       )}
 
       {/* Match modal */}
-      {showMatchModal && <MatchModal
-        isOpen={showMatchModal}
-        onClose={handleMatchClose}
-        onLikeBackProfile={likeBackProfile}
-        currentUser={currentUser}
-      />}
+      {showMatchModal && <MatchModal isOpen={showMatchModal} onClose={handleMatchClose} onLikeBackProfile={likeBackProfile} currentUser={currentUser} />}
 
       {/* Chat simulation */}
       {chatOpen && matchedUserId && (
-        <ChatSimulation
-          isOpen={chatOpen}
-          onClose={handleChatClose}
-          matchedUserId={matchedUserId}
-          onSendMessage={handleSendMessage}
-        />
+        <ChatSimulation isOpen={chatOpen} onClose={handleChatClose} matchedUserId={matchedUserId} onSendMessage={handleSendMessage} />
       )}
-    </div>
+    </section>
   );
 }
