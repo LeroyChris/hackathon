@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { SEED_PROFILES, autoReplies, GOAL_LABEL } from '../../data/mockData.js';
 import FilterBar from './FilterBar.jsx';
 import SwipeCard from './SwipeCard.jsx';
