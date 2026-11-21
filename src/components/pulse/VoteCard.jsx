@@ -11,10 +11,11 @@ function formatRemaining(closesAt) {
 }
 
 export default function VoteCard({ market, currentUser, onVote }) {
-  const { id, question, category, campus, closesAt, status, pool } = market || {};
+  const { id, question, category, campus, closesAt, status, pool, votes } = market || {};
   const yes = pool?.yes || 0;
   const no = pool?.no || 0;
   const total = yes + no;
+  const participantCount = new Set((votes || []).map((v) => v?.userId).filter(Boolean)).size;
   const yesPercent = total === 0 ? 50 : Math.round((yes / total) * 100);
   const noPercent = total === 0 ? 50 : 100 - yesPercent;
 
@@ -39,6 +40,19 @@ export default function VoteCard({ market, currentUser, onVote }) {
       </div>
 
       <h3 className="vote-question">{question}</h3>
+
+      {/* Total Pool XP */}
+      <div className="vote-meta" style={{ gap: 12 }}>
+        <span className="stat-pill" style={{ padding: '4px 10px', fontSize: 13 }}>
+          Total Pool: <strong>{total.toLocaleString('id')} XP</strong>
+        </span>
+        <span className="muted" style={{ fontSize: 13 }}>
+          Ya: {yes.toLocaleString('id')} XP · Tidak: {no.toLocaleString('id')} XP
+        </span>
+        <span className="muted" style={{ fontSize: 13, marginLeft: 'auto' }}>
+          {participantCount} peserta
+        </span>
+      </div>
 
       <div
         className="progress"
